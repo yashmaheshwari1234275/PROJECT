@@ -1,0 +1,17 @@
+`timescale 1ns / 1ps
+module mux_16_tb;
+  reg[15:0] a;
+  reg[3:0] b;
+  wire f;
+  mux_16 mux_16_tb(.in(a),.sel(b),.out(f));
+  initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars(1);
+    $monitor("a=%h ,b=%h ,f=%b ",a,b,f);
+    a=16'h3F0A ; b=4'h0; #5;
+    b=4'h1; #5;
+    b=4'h6; #5;
+    b=4'hC; #5;
+    b=4'h9; #5;
+  end
+endmodule
