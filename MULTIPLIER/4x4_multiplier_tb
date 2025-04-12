@@ -1,0 +1,49 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 08.04.2025 23:34:36
+// Design Name: 
+// Module Name: multiplier_tb
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+module multiplier_tb;
+    reg [3:0] d, y;
+    wire [7:0] p;
+    
+    // Instantiate the multiplier module
+    multiplier uut (
+        .p(p),
+        .d(d),
+        .y(y)
+    );
+    
+    initial begin
+        // Monitor output
+        $monitor("Time=%0t | d=%b y=%b -> p=%b", $time, d, y, p);
+        $dumpfile("wave.vcd");
+        $dumpvars(0, multiplier_tb);
+        
+        // Apply test cases
+        d = 4'b0000; y = 4'b0000; #10;
+        d = 4'b0001; y = 4'b0001; #10;
+        d = 4'b0010; y = 4'b0011; #10;
+        d = 4'b0101; y = 4'b0011; #10;
+        d = 4'b0110; y = 4'b0100; #10;
+        d = 4'b1010; y = 4'b0110; #10;
+        d = 4'b1111; y = 4'b1111; #10;
+                // End simulation
+        $finish;
+    end
+endmodule
