@@ -1,0 +1,56 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 13.04.2025 01:29:27
+// Design Name: 
+// Module Name: alu_8_bits
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module alu_8_bits(s, cout, mode, a, b);
+  input [7:0] a, b;
+  input [3:0] mode;
+  output [7:0] s;
+  output cout;
+
+  reg [8:0] alu_result; // 9 bits to include carry
+  assign s = alu_result[7:0];
+  assign cout = alu_result[8];
+
+  always @(*) begin
+    case(mode)
+      4'b0000: alu_result = a + b;
+      4'b0001: alu_result = a - b;
+      4'b0010: alu_result = a * b;
+      4'b0011: alu_result = (b != 0) ? a / b : 9'd0;
+      4'b0100: alu_result = a << 1;
+      4'b0101: alu_result = a >> 1;
+      4'b0110: alu_result = {a[6:0], a[7]};       // Left circular shift
+      4'b0111: alu_result = {a[0], a[7:1]};       // Right circular shift
+      4'b1000: alu_result = a & b;
+      4'b1001: alu_result = a | b;
+      4'b1010: alu_result = a ^ b;
+      4'b1011: alu_result = ~(a | b);
+      4'b1100: alu_result = ~(a & b);
+      4'b1101: alu_result = ~(a ^ b);
+      4'b1110: alu_result = (a > b) ? 9'd1 : 9'd0;  // Comparison
+      4'b1111: alu_result = (a == b) ? 9'd1 : 9'd0; // Equality
+      default: alu_result = a + b;
+    endcase
+  end
+
+endmodule
+
