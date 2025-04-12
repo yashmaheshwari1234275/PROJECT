@@ -1,0 +1,31 @@
+`timescale 1ns / 1ps
+// Code your design here
+module mux_16(out,in,sel);
+  input[15:0] in;
+  input [3:0] sel;
+  output out;
+  wire[3:0] t;
+  mux_4 m0(t[0],in[3:0],sel[1:0]);
+  mux_4 m1(t[1],in[7:4],sel[1:0]);
+  mux_4 m2(t[2],in[11:8],sel[1:0]);
+  mux_4 m3(t[3],in[15:12],sel[1:0]);
+  mux_4 m4(out,t,sel[3:2]);
+endmodule
+    
+    
+module mux_4(out,in,sel);
+  input[3:0] in;
+  input[1:0] sel;
+  output out;
+  wire [1:0] t;
+  mux_2 w0(t[0],in[1:0],sel[0]);
+  mux_2 w1(t[0],in[3:2],sel[0]);
+  mux_2 w2(out,t,sel[1]);
+endmodule
+
+module mux_2(out,in,sel);
+  input[1:0] in;
+  input sel;
+  output out;
+  assign out=in[sel];
+endmodule
