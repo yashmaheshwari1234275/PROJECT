@@ -1,0 +1,54 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 08.04.2025
+// Design Name: 4x4 Multiplier
+// Module Name: multiplier
+// Description: 4-bit by 4-bit multiplier using full adders and AND gates
+//////////////////////////////////////////////////////////////////////////////////
+
+// Full Adder Module
+module full_adder(sum, cout, a, b, cin);
+  input a, b, cin;
+  output sum, cout;
+
+  assign sum = a ^ b ^ cin;
+  assign cout = (a & b) | (b & cin) | (cin & a);
+endmodule
+
+// Multiplier Module
+module multiplier(p, d, y);
+  input [3:0] d, y;
+  output [7:0] p;
+
+  wire [11:0] c;
+  wire [5:0] s;
+  wire [3:0] pp0, pp1, pp2, pp3;
+
+  assign pp0 = d & {4{y[0]}};
+  assign pp1 = d & {4{y[1]}};
+  assign pp2 = d & {4{y[2]}};
+  assign pp3 = d & {4{y[3]}};
+
+  assign p[0] = pp0[0];
+
+  full_adder f1(p[1],  c[0], pp0[1], pp1[0], 1'b0);
+  full_adder f2(s[0],  c[1], pp0[2], pp1[1], c[0]);
+  full_adder f3(s[1],  c[2], pp0[3], pp1[2], c[1]);
+  full_adder f4(s[2],  c[3], 1'b0,   pp1[3], c[2]);
+
+  full_adder f5(p[2],  c[4], s[0],   pp2[0], 1'b0);
+  full_adder f6(s[3],  c[5], s[1],   pp2[1], c[4]);
+  full_adder f7(s[4],  c[6], s[2],   pp2[2], c[5]);
+  full_adder f8(s[5],  c[7], c[3],   pp2[3], c[6]);
+
+  full_adder f9(p[3],  c[8], s[3],   pp3[0], 1'b0);
+  full_adder f10(p[4], c[9], s[4],   pp3[1], c[8]);
+  full_adder f11(p[5], c[10], s[5],  pp3[2], c[9]);
+  full_adder f12(p[6], c[11], c[7],  pp3[3], c[10]);
+
+  assign p[7] = c[11];
+
+endmodule
