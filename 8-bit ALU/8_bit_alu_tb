@@ -1,0 +1,56 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 13.04.2025 01:30:54
+// Design Name: 
+// Module Name: alu_8_bits_tb
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module alu_8_bits_tb;
+
+  reg [7:0] a, b;
+  reg [3:0] mode;
+  wire cout;
+  wire [7:0] s;
+  integer i;
+
+  alu_8_bits dut (.a(a), .b(b), .mode(mode), .cout(cout), .s(s));
+
+  initial begin
+    $monitor("Time=%0t | a=%h b=%h mode=%h => s=%h cout=%b", 
+              $time, a, b, mode, s, cout);
+    $dumpfile("dump.vcd");
+    $dumpvars(1);
+
+    a = 8'h0A;
+    b = 8'h02;
+    mode = 4'h0;
+
+    for (i = 0; i < 15; i = i + 1) begin
+      mode = mode + 1;
+      #10;
+    end
+
+    a = 8'hF6;
+    b = 8'h0A;
+    mode = 4'h5;
+    #10;
+
+    $finish; // End simulation
+  end
+
+endmodule
