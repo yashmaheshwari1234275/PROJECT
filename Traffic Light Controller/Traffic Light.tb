@@ -1,0 +1,75 @@
+`timescale 1ns / 1ps
+
+module Traffic_Light_tb;
+
+    // Inputs
+    reg clk;
+    reg reset;
+    reg x;
+
+    // Outputs
+    wire [1:0] hwy;
+    wire [1:0] cnt;
+
+    // Instantiate the Unit Under Test (UUT)
+    Traffic_Light uut (
+        .clk(clk),
+        .reset(reset),
+        .x(x),
+        .hwy(hwy),
+        .cnt(cnt)
+    );
+
+    // Clock generation
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk; // 10ns period
+    end
+
+    // Stimulus
+    initial begin
+        $monitor("Time=%0t | reset=%b | x=%b | hwy=%b | cnt=%b", $time, reset, x, hwy, cnt);
+
+        // Initial Reset
+        reset = 1; x = 0;
+        #20;
+        reset = 0;
+
+        // ─────────── Scenario 1: No car for a while ───────────
+        #100;
+
+        // ─────────── Scenario 2: Car appears ───────────
+        x = 1;
+        #150;
+
+        // ─────────── Scenario 3: Car leaves ───────────
+        x = 0;
+        #150;
+
+        // ─────────── Scenario 4: Another car quickly appears and disappears ───────────
+        x = 1; #10;
+        x = 0; #10;
+
+        // ─────────── Scenario 5: Car stays for a long time ───────────
+        x = 1;
+        #300;
+
+        // ─────────── Scenario 6: Reset during operation ───────────
+        reset = 1; #20;
+        reset = 0; x = 0;
+        #100;
+
+        // ─────────── Scenario 7: Multiple cars one after another ───────────
+        x = 1; #100;
+        x = 0; #50;
+        x = 1; #100;
+        x = 0; #50;
+
+        // ─────────── Scenario 8: No cars for long time ───────────
+        x = 0;
+        #300;
+
+        $finish;
+    end
+
+endmodule
