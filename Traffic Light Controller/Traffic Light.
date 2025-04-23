@@ -1,0 +1,121 @@
+`timescale 1ns / 1ps
+
+module Traffic_Light(
+    input wire clk,
+    input wire reset,
+    input wire x,
+    output reg [1:0] hwy,
+    output reg [1:0] cnt
+);
+
+// Parameters
+parameter TRUE  = 1'b1;
+parameter FALSE = 1'b0;
+
+parameter RED    = 2'b00;
+parameter YELLOW = 2'b01;
+parameter GREEN  = 2'b10;
+
+parameter S0 = 3'b000;
+parameter S1 = 3'b001;
+parameter S2 = 3'b010;
+parameter S3 = 3'b011;
+parameter S4 = 3'b100;
+
+parameter Y2RDELAY = 3;
+parameter R2GDELAY = 2;
+
+// Internal states
+reg [2:0] state, next_state;
+reg [3:0] delay_counter;
+
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        state <= S0;
+        delay_counter <= 0;
+    end else begin
+        state <= next_state;
+    end
+end
+
+// State logic
+always @(*) begin
+    case (state)
+        S0: begin
+            hwy = GREEN;
+            cnt = RED;
+        end
+        S1: begin
+            hwy = YELLOW;
+            cnt = RED;
+        end
+        S2: begin
+            hwy = RED;
+            cnt = RED;
+        end
+        S3: begin
+            hwy = RED;
+            cnt = GREEN;
+        end
+        S4: begin
+            hwy = RED;
+            cnt = YELLOW;
+        end
+        default: begin
+            hwy = RED;
+            cnt = RED;
+        end
+    endcase
+end
+
+// Next state logic (with delay emulation via counter)
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        next_state <= S0;
+        delay_counter <= 0;
+    end else begin
+        case (state)
+            S0: begin
+                if (x)
+                    next_state <= S1;
+                else
+                    next_state <= S0;
+            end
+            S1: begin
+                if (delay_counter < Y2RDELAY)
+                    delay_counter <= delay_counter + 1;
+                else begin
+                    next_state <= S2;
+                    delay_counter <= 0;
+                end
+            end
+            S2: begin
+                if (delay_counter < R2GDELAY)
+                    delay_counter <= delay_counter + 1;
+                else begin
+                    next_state <= S3;
+                    delay_counter <= 0;
+                end
+            end
+            S3: begin
+                if (~x)
+                    next_state <= S4;
+                else
+                    next_state <= S3;
+            end
+            S4: begin
+                if (delay_counter < Y2RDELAY)
+                    delay_counter <= delay_counter + 1;
+                else begin
+                    next_state <= S0;
+                    delay_counter <= 0;
+                end
+            end
+            default: begin
+                next_state <= S0;
+            end
+        endcase
+    end
+end
+
+endmodule
