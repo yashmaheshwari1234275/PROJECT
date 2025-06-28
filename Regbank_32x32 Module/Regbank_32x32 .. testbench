@@ -1,0 +1,90 @@
+`timescale 1ns / 1ps
+
+module regbank_32x32_tb;
+
+  // Testbench signals
+  reg clk;
+  reg reset;
+  reg [4:0] read_address1, read_address2, write_address;
+  reg [31:0] write_data;
+  reg write_enable;
+  wire [31:0] read_data1, read_data2;
+
+  // Instantiate the register bank
+  regbank_32x32 uut (
+    .clk(clk),
+    .reset(reset),
+    .read_address1(read_address1),
+    .read_address2(read_address2),
+    .write_address(write_address),
+    .write_data(write_data),
+    .write_enable(write_enable),
+    .read_data1(read_data1),
+    .read_data2(read_data2)
+  );
+
+  // Clock generation
+  always #5 clk = ~clk;
+
+  initial begin
+    // Initialize
+    $dumpfile("regbank_32x32_tb.vcd"); // VCD file for GTKWave
+    $dumpvars(0, regbank_32x32_tb);    // Dump all variables
+
+    clk = 0;
+    reset = 1;
+    write_enable = 0;
+    write_address = 0;
+    write_data = 0;
+    read_address1 = 0;
+    read_address2 = 0;
+
+    // Apply reset
+    #10;
+    reset = 0;
+
+    // Write to register 5
+    #10;
+    write_enable = 1;
+    write_address = 5;
+    write_data = 32'hDEADBEEF;
+
+    // Wait one clock cycle
+    #10;
+    write_enable = 0;
+
+    // Read from register 5
+    read_address1 = 5;
+    read_address2 = 0;
+
+    #10;
+
+    // Write to register 10
+    write_enable = 1;
+    write_address = 10;
+    write_data = 32'hCAFEBABE;
+
+    #10;
+    write_enable = 0;
+
+    // Read from both registers
+    read_address1 = 5;
+    read_address2 = 10;
+
+    #10;
+
+    // Reset again
+    reset = 1;
+    #10;
+    reset = 0;
+
+    // Check if registers are cleared
+    read_address1 = 5;
+    read_address2 = 10;
+    #10;
+
+    $display("Test complete. Inspect waveform in GTKWave.");
+    $finish;
+  end
+
+endmodule
