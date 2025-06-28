@@ -1,0 +1,33 @@
+module regbank_32x32 (
+  input clk,
+  input reset,
+  input [4:0] read_address1,
+  input [4:0] read_address2,
+  input [4:0] write_address,
+  input [31:0] write_data,
+  input write_enable,
+  output reg [31:0] read_data1,
+  output reg [31:0] read_data2
+);
+
+  reg [31:0] registers [31:0];
+
+  // Synchronous logic for writing to the register file
+  always @(posedge clk) begin
+    if (reset) begin
+      // Reset the registers to 0
+      for (integer i = 0; i < 32; i = i + 1) begin
+        registers[i] <= 32'b0;
+      end
+    end else if (write_enable) begin
+      // Write data to the specified register
+      registers[write_address] <= write_data;
+    end
+  end
+
+  // Combinational logic for reading from the register file
+  always @* begin
+    read_data1 <= registers[read_address1];
+    read_data2 <= registers[read_address2];
+  end
+endmodule
