@@ -1,0 +1,19 @@
+int buzzer = 8;
+char data;
+
+void setup() {
+  pinMode(buzzer, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    data = Serial.read();
+
+    if (data == '1') {
+      digitalWrite(buzzer, HIGH); // ON
+    } else {
+      digitalWrite(buzzer, LOW);  // OFF
+    }
+  }
+}
